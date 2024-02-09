@@ -1,0 +1,104 @@
+FROM cuda
+
+# Avoid timezone prompt
+ENV DEBIAN_FRONTEND=noninteractive
+ARG DEBIAN_FRONTEND=noninteractive
+
+# Install software-properties-common to add PPAs
+RUN apt-get update && \
+    apt-get install -y software-properties-common
+
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    apt-transport-https \
+    autoconf \
+    curl \
+    file \
+    gcc \
+    g++ \
+    gdb \
+    git \
+    graphviz \
+    libboost-chrono-dev \
+    libboost-date-time-dev \
+    libboost-filesystem-dev \
+    libboost-log-dev \
+    libboost-program-options-dev \
+    libboost-regex-dev \
+    libboost-system-dev \
+    libboost-thread-dev \
+    libcurl4-openssl-dev \
+    libssl-dev \
+    libwayland-dev \
+    libwayland-egl1-mesa \
+    libwayland-server0 \
+    libgles2-mesa-dev \
+    libxkbcommon-dev \
+    libxkbcommon-x11-dev \
+    make \
+    ninja-build \
+    rsync \
+    python3-dev \
+    software-properties-common \
+    tree \
+    valgrind \
+    vim \
+    weston \
+    wget \      
+    cmake \
+    protobuf-compiler \
+    libprotobuf-dev \
+    && rm -rf /var/lib/apt/lists
+
+# # Install cmake
+# ARG CMAKE_VERSION=3.26
+# ARG CMAKE_FULL_VERSION=3.26.1
+# RUN curl https://cmake.org/files/v${CMAKE_VERSION}/cmake-${CMAKE_FULL_VERSION}-linux-x86_64.tar.gz | tar xzvf - -C /usr/local
+# ENV PATH="/usr/local/cmake-${CMAKE_FULL_VERSION}-linux-x86_64/bin:${PATH}"
+
+# Prepare for installation
+RUN apt-get update && \
+    apt-get install -y lsb-release gnupg build-essential && \
+    apt-get clean all
+
+# # Obtain a copy of kitware's signing key
+# RUN wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | tee /etc/apt/trusted.gpg.d/kitware.gpg >/dev/null
+
+# # Add kitware's repository to your sources list
+# RUN apt-add-repository "deb https://apt.kitware.com/ubuntu/ $(lsb_release -cs) main"
+
+# # Install the kitware-archive-keyring package
+# RUN apt-get update && \
+#     apt-get install -y kitware-archive-keyring && \
+#     rm /etc/apt/trusted.gpg.d/kitware.gpg
+
+# Update and install the cmake package
+RUN apt-get update && \
+    apt-get install -y cmake
+
+# Install ONNX dependencies
+RUN pip3 install numpy protobuf future 
+
+ENV ONNX_ML=1
+ENV ONNX_NAMESPACE=onnx
+
+# Clone the ONNX repository
+RUN git clone https://github.com/onnx/onnx.git 
+WORKDIR /onnx    
+RUN git checkout v1.14.0 && \
+    git submodule update --init --recursive
+
+RUN ln -s /usr/bin/python3 /usr/bin/python
+
+# Set environment variable for CMake
+ENV CMAKE_ARGS="-DONNX_USE_LITE_PROTO=ON -DONNX_USE_PROTOBUF_SHARED_LIBS=ON -DONNX_BUILD_SHARED_LIBS=ON"
+
+# #Install ONNX
+RUN pip3 install -e .
+    
+# # WORKDIR /
+# # # # install onnxruntime-gpu
+#  RUN pip3 install onnxruntime-gpu
+#  RUN pip3 install onnxruntime-extensions
+
+ENTRYPOINT ["/bin/bash"]
