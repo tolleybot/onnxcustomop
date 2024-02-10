@@ -1,4 +1,8 @@
-FROM cuda
+FROM tolleybot/cuda
+
+WORKDIR /usr/src/app
+
+RUN apt-get update
 
 # Avoid timezone prompt
 ENV DEBIAN_FRONTEND=noninteractive
@@ -8,7 +12,9 @@ ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
     apt-get install -y software-properties-common
 
+# add any PPA's here
 
+# Install build essentials and git
 RUN apt-get update && apt-get install -y --no-install-recommends \
     apt-transport-https \
     autoconf \
@@ -48,6 +54,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     cmake \
     protobuf-compiler \
     libprotobuf-dev \
+    build-essential \    
+    gnupg \
+    lsb-release \
+    curl \
+    unzip \
+    zip \
+    tar \
+    pkg-config \
+    autoconf \
+    automake \
+    autoconf-archive \
     && rm -rf /var/lib/apt/lists
 
 # # Install cmake
@@ -56,49 +73,34 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # RUN curl https://cmake.org/files/v${CMAKE_VERSION}/cmake-${CMAKE_FULL_VERSION}-linux-x86_64.tar.gz | tar xzvf - -C /usr/local
 # ENV PATH="/usr/local/cmake-${CMAKE_FULL_VERSION}-linux-x86_64/bin:${PATH}"
 
-# Prepare for installation
-RUN apt-get update && \
-    apt-get install -y lsb-release gnupg build-essential && \
-    apt-get clean all
-
-# # Obtain a copy of kitware's signing key
-# RUN wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | tee /etc/apt/trusted.gpg.d/kitware.gpg >/dev/null
-
-# # Add kitware's repository to your sources list
-# RUN apt-add-repository "deb https://apt.kitware.com/ubuntu/ $(lsb_release -cs) main"
-
-# # Install the kitware-archive-keyring package
-# RUN apt-get update && \
-#     apt-get install -y kitware-archive-keyring && \
-#     rm /etc/apt/trusted.gpg.d/kitware.gpg
-
-# Update and install the cmake package
-RUN apt-get update && \
-    apt-get install -y cmake
+RUN apt-get clean all
 
 # Install ONNX dependencies
-RUN pip3 install numpy protobuf future 
-
-ENV ONNX_ML=1
-ENV ONNX_NAMESPACE=onnx
-
-# Clone the ONNX repository
-RUN git clone https://github.com/onnx/onnx.git 
-WORKDIR /onnx    
-RUN git checkout v1.14.0 && \
-    git submodule update --init --recursive
-
+RUN pip3 install numpy protobuf future cython
+# create symbolic link to python3
 RUN ln -s /usr/bin/python3 /usr/bin/python
 
-# Set environment variable for CMake
+# Set the environment variable to force the use of system binaries
+ENV VCPKG_FORCE_SYSTEM_BINARIES=1
+ENV ONNX_ML=1
+ENV ONNX_NAMESPACE=onnx
+# Set environment variable for CMake onnx arguments
 ENV CMAKE_ARGS="-DONNX_USE_LITE_PROTO=ON -DONNX_USE_PROTOBUF_SHARED_LIBS=ON -DONNX_BUILD_SHARED_LIBS=ON"
 
-# #Install ONNX
-RUN pip3 install -e .
-    
-# # WORKDIR /
-# # # # install onnxruntime-gpu
-#  RUN pip3 install onnxruntime-gpu
-#  RUN pip3 install onnxruntime-extensions
+# Clone the vcpkg repository
+RUN git clone https://github.com/Microsoft/vcpkg.git
 
-ENTRYPOINT ["/bin/bash"]
+# Bootstrap vcpkg (compile it from source)
+RUN ./vcpkg/bootstrap-vcpkg.sh
+
+# Integrate vcpkg with the system
+RUN ./vcpkg/vcpkg integrate install
+
+# (Optional) Install any libraries with vcpkg
+# RUN ./vcpkg/vcpkg install <your-library-name>
+
+# Set the VCPKG_ROOT environment variable
+ENV VCPKG_ROOT /usr/src/app/vcpkg
+ENV PATH="/usr/src/app/vcpkg:$PATH"
+
+
