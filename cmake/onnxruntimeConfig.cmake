@@ -10,7 +10,7 @@ include(FindPackageHandleStandardArgs)
 get_filename_component(CMAKE_CURRENT_LIST_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
 #get_filename_component(onnxruntime_INSTALL_PREFIX "${CMAKE_CURRENT_LIST_DIR}/../../../" ABSOLUTE)
 
-set(onnxruntime_INCLUDE_DIRS "/lib" "/usr/include" "/usr/local/include" "/onnxruntime/onnxruntime/" "/onnxruntime/include/onnxruntime"  "/onnxruntime/include/onnxruntime/core" "/onnxruntime/include/onnxruntime/core/session")
+set(onnxruntime_INCLUDE_DIRS "/lib" "/usr/include" "/usr/local/include" "/onnxruntime/onnxruntime/" "/onnxruntime/include/onnxruntime"  "/onnxruntime/include/onnxruntime/core" "/onnxruntime/include/onnxruntime/core/session" "/onnxruntime/build/Linux/RelWithDebInfo")
 set(onnxruntime_LIBRARIES onnxruntime)
 set(onnxruntime_CXX_FLAGS "") # no flags needed
 

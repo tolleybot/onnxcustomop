@@ -3,22 +3,22 @@ FROM tolleybot/onnxruntime
 WORKDIR /
 
 # # Clone the nsync repository and build it
-# RUN git clone https://github.com/google/nsync.git && \
-#     cd nsync && \
-#     mkdir build && \
-#     cd build && \
-#     cmake .. && \
-#     make && \
-#     make install
+RUN git clone https://github.com/google/nsync.git && \
+    cd nsync && \
+    mkdir build && \
+    cd build && \
+    cmake .. && \
+    make && \
+    make install
 
 # # Clone the Abseil repository, build and install it
-# RUN git clone https://github.com/abseil/abseil-cpp.git && \
-#     cd abseil-cpp && \
-#     mkdir build && \
-#     cd build && \
-#     cmake .. && \
-#     make && \
-#     make install
+RUN git clone https://github.com/abseil/abseil-cpp.git && \
+    cd abseil-cpp && \
+    mkdir build && \
+    cd build && \
+    cmake .. && \
+    make && \
+    make install
 
 # # Adding onnxruntime-extensions
 RUN git clone https://github.com/microsoft/onnxruntime-extensions.git && \

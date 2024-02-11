@@ -34,7 +34,7 @@ ONNX_OPERATOR_KERNEL_EX(
     AddTwoNumbers,  // The name of the operator
     kMSDomain,  // The domain of the operator (use kMSDomain for custom operators)
     1,  // The version of the operator
-    kCpuExecutionProvider,  // The execution provider for the operator
+    kCudaExecutionProvider,  // The execution provider for the operator
     KernelDefBuilder()
         .TypeConstraint("T", DataTypeImpl::GetTensorType<float>()),  // The data type constraint for the operator
     AddTwoNumbersOp);  // The class that implements the operator
