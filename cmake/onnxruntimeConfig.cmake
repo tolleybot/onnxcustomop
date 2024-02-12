@@ -18,11 +18,17 @@ set(onnxruntime_CXX_FLAGS "") # no flags needed
 find_library(onnxruntime_LIBRARY onnxruntime
     PATHS "/usr/lib" "/usr/local/lib"
 )
-
+# Print the found library path
+message(STATUS "Found onnxruntime library: ${onnxruntime_LIBRARY}")
 
 add_library(onnxruntime SHARED IMPORTED)
 set_property(TARGET onnxruntime PROPERTY IMPORTED_LOCATION "${onnxruntime_LIBRARY}")
 set_property(TARGET onnxruntime PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${onnxruntime_INCLUDE_DIRS}")
 set_property(TARGET onnxruntime PROPERTY INTERFACE_COMPILE_OPTIONS "${onnxruntime_CXX_FLAGS}")
+
+foreach(dir ${onnxruntime_INCLUDE_DIRS})
+    message(STATUS "ONNX Runtime include dir: ${dir}")
+endforeach()
+
 
 find_package_handle_standard_args(onnxruntime DEFAULT_MSG onnxruntime_LIBRARY onnxruntime_INCLUDE_DIRS)

@@ -27,7 +27,7 @@ find_package(Microsoft.GSL CONFIG REQUIRED)
 add_library(${PROJECT_NAME} SHARED addnumbop.cpp) 
 
 # Link ONNX Runtime and Microsoft GSL
-target_link_libraries(${PROJECT_NAME} PRIVATE onnxruntime Microsoft.GSL::GSL)
+target_link_libraries(${PROJECT_NAME} PRIVATE Microsoft.GSL::GSL onnxruntime)
 
 # If you want to echo out include directories or library paths, uncomment the following lines
 # message(STATUS "Include directories: ${onnxruntime_INCLUDE_DIRS}")

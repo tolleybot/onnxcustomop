@@ -1,10 +1,14 @@
-#include <onnx/onnx_pb.h>
-#include "onnxruntime_config.h"
+// #include <onnx/onnx_pb.h>
+// #include "onnxruntime_config.h"
+// #include "core/framework/op_kernel.h"
 #include "core/framework/op_kernel.h"
+#include "core/common/common.h"
+#include "core/session/onnxruntime_cxx_api.h"
+
 
 namespace onnxruntime {
 
-class AddTwoNumbersOp : public onnxruntime::OpKernel {
+class AddTwoNumbersOp : public OpKernel {
 public:
   explicit AddTwoNumbersOp(const OpKernelInfo& info) : OpKernel(info) {}
 
@@ -32,10 +36,10 @@ public:
 // Register the kernel for the custom operator
 ONNX_OPERATOR_KERNEL_EX(
     AddTwoNumbers,  // The name of the operator
-    kMSDomain,  // The domain of the operator (use kMSDomain for custom operators)
+    kOnnxDomain,  // The domain of the operator (use kMSDomain for custom operators)
     1,  // The version of the operator
-    kCudaExecutionProvider,  // The execution provider for the operator
-    KernelDefBuilder()
+    kCpuExecutionProvider,  // The execution provider for the operator
+    (*KernelDefBuilder::Create())
         .TypeConstraint("T", DataTypeImpl::GetTensorType<float>()),  // The data type constraint for the operator
     AddTwoNumbersOp);  // The class that implements the operator
 

@@ -21,5 +21,11 @@
     "peacock.remoteColor": "#007fff",
     "cmake.configureSettings": {
         "CMAKE_TOOLCHAIN_FILE": "/usr/src/app/vcpkg/scripts/buildsystems/vcpkg.cmake"
+    },
+    "files.associations": {
+        "*.inc": "cpp",
+        "*.ipp": "cpp",
+        "typeindex": "cpp",
+        "typeinfo": "cpp"
     }
 }
