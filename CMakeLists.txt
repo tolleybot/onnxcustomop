@@ -23,8 +23,10 @@ find_package(onnxruntime REQUIRED)
 # Find Microsoft GSL (Guideline Support Library) using vcpkg
 find_package(Microsoft.GSL CONFIG REQUIRED)
 
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}")
+
 # Add executable
-add_library(${PROJECT_NAME} SHARED addnumbop.cpp) 
+add_library(${PROJECT_NAME} SHARED addop.cpp registeraddop.cpp) 
 
 # Link ONNX Runtime and Microsoft GSL
 target_link_libraries(${PROJECT_NAME} PRIVATE Microsoft.GSL::GSL onnxruntime)
